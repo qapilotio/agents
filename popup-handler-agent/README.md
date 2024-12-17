@@ -142,4 +142,4 @@ For questions or support, please contact [Your Contact Information]
 
 ## License
 
-[Specify your license here]
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
