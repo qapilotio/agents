@@ -24,9 +24,10 @@ class APIRequest(BaseModel):
 async def run_service(request: APIRequest):
     try:
         llm_key = os.getenv("OPENAI_API_KEY")
-        print(llm_key)
+        if not llm_key:
+            raise HTTPException(status_code=500, detail="API key not found. Please check your environment variables.")
         llm = initialize_llm(llm_key)
-        
+
         if request.image and request.xml:
             raise HTTPException(status_code=422, detail="Both image and xml were provided. Please provide only one.")
 
@@ -79,8 +80,7 @@ async def run_service(request: APIRequest):
         # Return the parsed output in the API response
         return {
             "status": "success",
-            "Agent-response": parsed_output,
-            "processed_xml": processed_xml,
+            "Agent-response": parsed_output
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

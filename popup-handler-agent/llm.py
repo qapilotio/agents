@@ -1,9 +1,7 @@
-import os
 from langchain_openai import ChatOpenAI
 
 def initialize_llm(OPENAI_API_KEY):
 
-    print(OPENAI_API_KEY)
     return ChatOpenAI(
         model="gpt-4o",
         temperature=0,

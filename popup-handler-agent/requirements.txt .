@@ -1,5 +1,7 @@
-uvicorn 
+uvicorn
 dotenv
 fastapi
 langchain-openai
 langchain-core
+pydantic
+requests
