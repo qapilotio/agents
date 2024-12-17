@@ -77,7 +77,7 @@ async def run_service(request: APIRequest):
         # Return the parsed output in the API response
         return {
             "status": "success",
-            "agent-response": parsed_output
+            "agent_response": parsed_output
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
