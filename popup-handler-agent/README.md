@@ -9,14 +9,14 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
 - **Image Analysis**: Encodes images and analyzes them to detect pop-ups.
 - **XML Analysis**: Parses XML data to identify pop-up elements and extract relevant details.
 - **AI Integration**: Uses OpenAI's GPT-4o model to provide suggestions based on the detected pop-ups.
-- **API Endpoints**: Provides endpoints for running the service.
+- **API Endpoints**: Provides endpoints for running the service and health checks.
 
 ## Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/qapilotio/agents.git
    cd popup-handler-agent
    ```
 
@@ -27,7 +27,7 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
    ```
 
 3. Set up environment variables:
-   - Create a `.env` file in the pop-up-handler-agent directory.
+   - Create a `.env` file in the root directory.
    - Add your OpenAI API key:
      ```
      OPENAI_API_KEY=your_openai_api_key
@@ -45,8 +45,24 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
 
 ## API Endpoints
 
-- **POST /run_service**: Accepts an image or XML input and returns the analysis results.
-- **GET /health_check**: Returns the health status of the application.
+- **POST /invoke**: Accepts an image or XML input and returns the analysis results.
+
+  - **Sample Payload for Image Analysis:**
+    ```json
+    {
+      "image": "base64_encoded_image_string",
+      "testcase_dec": "Description of the test case"
+    }
+    ```
+  - **Sample Payload for XML Analysis:**
+    ```json
+    {
+      "xml": "<xml_content_here>",
+      "testcase_dec": "Description of the test case"
+    }
+    ```
+
+- **GET /health_check**: Returns the health status of the application. No payload is required.
 
 ## Code Structure
 
@@ -59,10 +75,6 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
 
 Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
 
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
-
 ## Contact
 
-For any questions or support, please contact [your-email@example.com].
+For any questions or support, please contact [].

@@ -15,8 +15,6 @@ load_dotenv()
 
 app = FastAPI()
 
-
-
 class APIRequest(BaseModel):
     image: Optional[str] = None
     testcase_dec: str
@@ -28,6 +26,9 @@ async def run_service(request: APIRequest):
         llm_key = os.getenv("OPENAI_API_KEY")
         print(llm_key)
         llm = initialize_llm(llm_key)
+        
+        if request.image and request.xml:
+            raise HTTPException(status_code=422, detail="Both image and xml were provided. Please provide only one.")
 
         if request.image:
             encoded_image = encode_image(request.image)
@@ -45,7 +46,7 @@ async def run_service(request: APIRequest):
                     },
                 ]),
             ]
-        elif request.xml:
+        if request.xml:
             processed_xml = extract_popup_details(request.xml)
             messages = [
                 (
