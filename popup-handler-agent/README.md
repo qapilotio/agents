@@ -2,7 +2,9 @@
 
 ## Overview
 
-The Popup Handler Agent is a FastAPI-based application designed to analyze mobile screenshots and XML data to detect pop-up dialog boxes, utilizing OpenAI's GPT-4o model to provide intelligent recommendations.
+The Popup Handler Agent is a FastAPI-based application designed to analyze mobile screenshots and XML data to detect pop-up dialog boxes on Android devices. It utilizes OpenAI's GPT-4o model to provide intelligent recommendations.
+
+**Note: This application currently only supports XMLs from Android and is under active development.**
 
 ## Features
 
@@ -36,7 +38,7 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
    - Create a `.env` file
    - Add OpenAI API key:
      ```
-     OPENAI_API_KEY=your_openai_api_key
+     OPENAI_API_KEY="your_openai_api_key"
      ```
 
 ## Usage
@@ -61,27 +63,63 @@ The Popup Handler Agent is a FastAPI-based application designed to analyze mobil
 
 The `/invoke` endpoint accepts a JSON payload with:
 
-| Field          | Type   | Required      | Description                 | Input Options                       |
-| -------------- | ------ | ------------- | --------------------------- | ----------------------------------- |
-| `testcase_dec` | string | Yes           | Test case description       | Free-text description               |
-| `image`        | string | Conditional\* | Screen analysis image       | - Local file path<br>- URL to image |
-| `xml`          | string | Conditional\* | Mobile screen hierarchy XML | - Local file path<br>- URL to XML   |
+| Field          | Type   | Required   | Description                 | Input Options                       |
+| -------------- | ------ | ---------- | --------------------------- | ----------------------------------- |
+| `testcase_dec` | string | Yes        | Test case description       | Free-text description               |
+| `image`        | string | Optional\* | Screen analysis image       | - Local file path<br>- URL to image |
+| `xml`          | string | Optional\* | Mobile screen hierarchy XML | - Local file path<br>- URL to XML   |
 
-\*Note: Either `image` or `xml` must be provided, but not both.
+**Note: At least `image` or `xml` must be provided. If both are provided, then `xml` will be prioritized and used for analysis.**
 
-### GET /health
-
-- Checks application status
-
-## Response Format
+#### Response Format
 
 Successful response includes:
 
 - `status`: Request success indicator
-- `Agent-response`:
+- `agent_response`:
   - `popup_detection`: Pop-up presence ("Yes"/"No")
   - `suggested_action`: Recommended action
   - `element_metadata`: Detailed element information (XML input)
+
+#### Sample Output
+
+- **When XML is provided:**
+
+  ```json
+  {
+    "status": "success",
+    "agent_response": {
+      "popup_detection": "Yes",
+      "suggested_action": "Select 'While using the app' to grant permission.",
+      "element_metadata": {
+        "element_type": "Button",
+        "element_details": "Button to allow permission while using the app",
+        "resource_id": "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+        "bounds": "[152,1345][1128,1513]",
+        "clickable": "True",
+        "class_name": "Button",
+        "text": "While using the app",
+        "xpath": "/hierarchy/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.ScrollView/android.widget.LinearLayout/android.widget.LinearLayout[1]/android.widget.Button[1]"
+      }
+    }
+  }
+  ```
+
+- **When only an image is provided:**
+
+  ```json
+  {
+    "status": "success",
+    "agent_response": {
+      "popup_detection": "Yes",
+      "suggested_action": "Select 'While using the app' to proceed with login."
+    }
+  }
+  ```
+
+### GET /health
+
+- Checks application status
 
 ## Project Structure
 

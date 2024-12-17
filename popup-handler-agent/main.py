@@ -20,6 +20,7 @@ class APIRequest(BaseModel):
     testcase_dec: str
     xml: Optional[str] = None
 
+
 @app.post("/invoke")
 async def run_service(request: APIRequest):
     try:
@@ -28,10 +29,18 @@ async def run_service(request: APIRequest):
             raise HTTPException(status_code=500, detail="API key not found. Please check your environment variables.")
         llm = initialize_llm(llm_key)
 
-        if request.image and request.xml:
-            raise HTTPException(status_code=422, detail="Both image and xml were provided. Please provide only one.")
+        if request.xml:
+            processed_xml = extract_popup_details(request.xml)
+            messages = [
+                (
+                    "system",
+                    xml_prompt,
+                ),
+                ("human", f"test-case description: {request.testcase_dec}"),
+                ("human", f'this is the output from the pop-detector: {processed_xml}')
+            ]
 
-        if request.image:
+        elif request.image:
             encoded_image = encode_image(request.image)
             messages = [
                 (
@@ -47,22 +56,10 @@ async def run_service(request: APIRequest):
                     },
                 ]),
             ]
-        if request.xml:
-            processed_xml = extract_popup_details(request.xml)
-            messages = [
-                (
-                    "system",
-                    xml_prompt,
-                ),
-                ("human", f"test-case description: {request.testcase_dec}"),
-                ("human", f'this is the output from the pop-detector: {processed_xml}')
-            ]
         else:
             raise HTTPException(status_code=400, detail="Either image or xml must be provided.")
 
         ai_msg = llm.invoke(messages)
-        output = ai_msg.content
-        print("AI Message Content:", ai_msg.content)
 
         # Remove any extraneous formatting like triple backticks if present
         cleaned_content = ai_msg.content.strip("```json\n").strip("\n```")
@@ -80,7 +77,7 @@ async def run_service(request: APIRequest):
         # Return the parsed output in the API response
         return {
             "status": "success",
-            "Agent-response": parsed_output
+            "agent-response": parsed_output
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
