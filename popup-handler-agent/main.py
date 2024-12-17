@@ -3,7 +3,6 @@ from llm import initialize_llm
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from global_config import global_config
 from prompts import image_prompt, xml_prompt
 from typing import Optional
 
